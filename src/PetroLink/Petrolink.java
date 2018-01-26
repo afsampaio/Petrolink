@@ -5,9 +5,23 @@ import java.util.GregorianCalendar;
 public class Petrolink {
 	
 	public static void main(String[] args) {
-		GregorianCalendar previous = new GregorianCalendar();
+		String databasePath;
+		String csvPath;
+		String xmlPath;
+		Simulator simulator;
 		
-		Simulator simulator = new Simulator(1, "PetroLink");
+		if(args.length > 0) {
+			//Given Info Constructor,
+			databasePath = args[0];
+			csvPath = args[1];
+			xmlPath = args[2];
+			simulator = new Simulator(1, databasePath, csvPath, xmlPath);
+		}
+		else {
+			//Default Constructor
+			simulator = new Simulator(1, "petrolink_challenge.db");
+		}
+		
 		simulator.start();
 		
 		try {
@@ -17,6 +31,6 @@ public class Petrolink {
 		}
 		
 		GregorianCalendar posterior = new GregorianCalendar();
-		System.out.println("Done and Done. " + (posterior.getTimeInMillis() - previous.getTimeInMillis()));
+		System.out.println("Done.");
 	}
 }

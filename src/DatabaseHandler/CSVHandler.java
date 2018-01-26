@@ -21,9 +21,9 @@ public class CSVHandler {
 		this.file = new File(this.filename);
 		
 		if (this.file.createNewFile()){
-			System.out.println("File is created!");
+			System.out.println("File created!");
 		}else{
-			System.out.println("File already exists.");
+			System.out.println("File already exists!");
 		}
 		
 		this.writer = new FileWriter(this.file);

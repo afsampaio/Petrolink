@@ -5,31 +5,29 @@ import java.io.IOException;
 import java.sql.Connection;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.TransformerException;
 
 import PetroLink.Coordinates;
+import PetroLink.Simulator;
 
-public class Writer {
+public class Writer extends Thread{
 	private String databaseName;
+	private Simulator simulator;
 	private String xmlFileName;
 	private String csvFileName;
-	private String jsonFileName;
-	private Connection dbConnection;
 	
 	private XMLHandler xmlHandler;
 	private CSVHandler csvHandler;
 	private SQLiteHandler dbHandler;
 	
-	public Writer(String dbname, Connection conn, String xmlName, String csvName, String jsonName) {
+	public Writer(String dbname, Simulator sim, String xmlName, String csvName) {
 		this.databaseName = dbname;
-		this.dbConnection = conn;
+		this.simulator = sim;
 		this.xmlFileName = xmlName;
 		this.csvFileName = csvName;
-		this.jsonFileName = jsonName;
 		
 		this.xmlHandler = new XMLHandler(this.xmlFileName);
 		this.csvHandler = new CSVHandler(this.csvFileName);
-		this.dbHandler = new SQLiteHandler();
+		this.dbHandler = new SQLiteHandler(this.databaseName);
 		
 		try {
 			this.xmlHandler.setupWriterDom();
@@ -52,13 +50,9 @@ public class Writer {
 	public void writeToDatabase(Coordinates coords) {
 		this.dbHandler.pushToDb(coords);
 	}
-	
-	public void writeToJSon() {
-		
-	}
+
 	
 	public void writeAllFormats(Coordinates coords) {
-			
 		try {
 			this.writeToXML(coords);
 			this.writeToCSV(coords);
@@ -78,50 +72,24 @@ public class Writer {
 			System.out.println("Error closing Files. " + e.getMessage());
 		}
 	}
-}
-
-/*class DbWriter extends Writer implements Runnable{
-	public DbWriter() {
-		super(" ", " ", " "," ");
-	}
-	
-	public boolean write(){
-		return true;
-	}
 	
 	public void run() {
+		boolean active = true;
+		int index = 0;
+		Coordinates coords;
 		
+		while(active) {
+			coords = this.simulator.getFromCoordinateRegistry(index);
+			
+			if(coords != null) {
+				this.writeAllFormats(coords);
+				index++;
+				active = this.simulator.getStatusAndEnd(index); //This code is required here because I removed the delete idea;
+			}else {
+				active = this.simulator.getStatus();
+			}
+		}
+		
+		closeAllFormats();
 	}
 }
-
-class XMLWriter extends Writer implements Runnable{
-	String filename;
-	
-	public XMLWriter(String filename) {
-		super();
-	}
-	
-	public boolean write(){
-		return true;
-	}
-	
-	public void run() {
-		
-	}
-}
-
-class CSVWriter extends Writer implements Runnable{
-	String filename;
-	public CSVWriter(String filename) {
-		super();
-		this.filename = filename;
-	}
-	
-	public boolean write(){
-		return true;
-	}
-	
-	public void run() {
-		
-	}
-}*/

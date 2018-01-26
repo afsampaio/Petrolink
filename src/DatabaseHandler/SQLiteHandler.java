@@ -11,18 +11,18 @@ import PetroLink.Coordinates;
 
 public class SQLiteHandler {
 	
-	private String dbname;
+	private String dbName;
 	private Connection dbConnection;
 	
-	public SQLiteHandler() {
+	public SQLiteHandler(String database) {
+		this.dbName = database;
 		try {
 			Connection conn = null;
 			
 			//To test in other operating systems, path must be changed;
-			String url = "jdbc:sqlite:C:\\Users\\andr3mp\\eclipse-workspace\\PetroLinkTest\\petrolink_challenge.db";
+			String url = "jdbc:sqlite:" + this.dbName;
 			conn = DriverManager.getConnection(url);
 			
-			System.out.println("Writer: Connection has been established");
 			this.dbConnection = conn;
 			
 		} catch(SQLException e){
@@ -37,7 +37,6 @@ public class SQLiteHandler {
 		try {
 			stmt = dbConnection.createStatement();
 			stmt.execute(sqlCreate);
-			System.out.println("TAble created with success********************************************************************************");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
